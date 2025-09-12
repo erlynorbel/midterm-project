@@ -1,35 +1,38 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useContext } from 'react';
+import GameContext, { GameProvider } from './contexts/GameContext';
+import StartScreen from './components/StartScreen';
+import GameScreen from './components/GameScreen';
+import './App.css'; // We'll create this soon
 
-function App() {
-  const [count, setCount] = useState(0)
+function AppContent() {
+    const { gameState, resetGame } = useContext(GameContext);
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    if (!gameState.playerName) {
+        return <StartScreen />;
+    }
+
+    if (gameState.isGameOver || gameState.isVictory) {
+        const message = gameState.isVictory ? "Congratulations! You saved San Gubat!" : "Game Over!";
+        return (
+            <div className="game-end-screen">
+                <h1>{message}</h1>
+                {gameState.currentSceneId && <p>{gameState.storyData[gameState.currentSceneId].text}</p>}
+                <button onClick={resetGame}>Play Again</button>
+            </div>
+        );
+    }
+
+    return <GameScreen />;
 }
 
-export default App
+function App() {
+    return (
+        <GameProvider>
+            <div className="App">
+                <AppContent />
+            </div>
+        </GameProvider>
+    );
+}
+
+export default App;
