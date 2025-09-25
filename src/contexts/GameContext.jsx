@@ -6,27 +6,14 @@ const GameContext = createContext();
 const initialGameState = {
     playerName: '',
     hp: 100,
-    inventory: [], // e.g., ['Asin', 'Bawang', 'Agimat']
+    inventory: [],
     currentSceneId: 'start',
     isGameOver: false,
     isVictory: false,
 };
 
-const LOCAL_STORAGE_KEY = 'aswangHunterGameState';
-
 export const GameProvider = ({ children }) => {
-    const [gameState, setGameState] = useState(() => {
-        const savedState = localStorage.getItem(LOCAL_STORAGE_KEY);
-        if (savedState) {
-            return JSON.parse(savedState);
-        }
-        return initialGameState;
-    });
-
-    // Effect to save game state to localStorage whenever it changes
-    useEffect(() => {
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(gameState));
-    }, [gameState]);
+    const [gameState, setGameState] = useState(initialGameState);
 
     // Effect to check for HP game over condition
     useEffect(() => {
@@ -39,7 +26,6 @@ export const GameProvider = ({ children }) => {
         }
     }, [gameState.hp, gameState.isGameOver, gameState.isVictory]);
 
-
     const startGame = useCallback((playerName) => {
         setGameState({
             ...initialGameState,
@@ -49,7 +35,6 @@ export const GameProvider = ({ children }) => {
 
     const resetGame = useCallback(() => {
         setGameState(initialGameState);
-        localStorage.removeItem(LOCAL_STORAGE_KEY); // Clear saved game
     }, []);
 
     const makeChoice = useCallback((choice) => {
@@ -57,7 +42,6 @@ export const GameProvider = ({ children }) => {
             let newState = { ...prevState };
             const currentScene = storyData[prevState.currentSceneId];
 
-            // Apply effects from the scene (onArrive)
             if (currentScene.onArrive) {
                 if (currentScene.onArrive.addItem) {
                     newState.inventory = [...newState.inventory, currentScene.onArrive.addItem];
@@ -67,8 +51,6 @@ export const GameProvider = ({ children }) => {
                 }
             }
 
-            // Apply effects from the chosen choice itself if any
-            // (Our current story.json doesn't have choice-specific onArrive, but it's good to be prepared)
             if (choice.onArrive) {
                 if (choice.onArrive.addItem) {
                     newState.inventory = [...newState.inventory, choice.onArrive.addItem];
@@ -77,15 +59,13 @@ export const GameProvider = ({ children }) => {
                     newState.hp = Math.max(0, newState.hp - choice.onArrive.takeDamage);
                 }
             }
-            
-            // Transition to the new scene
+
             newState.currentSceneId = choice.to;
 
-            // Check for victory/game over conditions based on the new scene
             const nextScene = storyData[newState.currentSceneId];
-            if (nextScene.isEnding) {
-                newState.isGameOver = (nextScene.currentSceneId === 'gameOver_hp' || nextScene.currentSceneId === 'badEnding_noSalt');
-                newState.isVictory = (nextScene.currentSceneId === 'goodEnding');
+            if (nextScene?.isEnding) {
+                newState.isVictory = (newState.currentSceneId === 'goodEnding');
+                newState.isGameOver = !newState.isVictory;
             }
 
             return newState;

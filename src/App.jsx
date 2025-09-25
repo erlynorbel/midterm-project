@@ -1,38 +1,63 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useCallback, useEffect } from 'react';
 import GameContext, { GameProvider } from './contexts/GameContext';
+import LandingScreen from './components/LandingScreen';
 import StartScreen from './components/StartScreen';
 import GameScreen from './components/GameScreen';
-import './App.css'; // We'll create this soon
+import './App.css';
 
 function AppContent() {
-    const { gameState, resetGame } = useContext(GameContext);
+  const { gameState, resetGame, storyData } = useContext(GameContext);
+  const endingScene = storyData[gameState.currentSceneId];
+  const [uiStage, setUiStage] = useState('landing'); // landing | name | game | end
 
-    if (!gameState.playerName) {
-        return <StartScreen />;
+  // Move to name entry once player decides to continue from landing
+  const goName = useCallback(() => setUiStage('name'), []);
+
+  // Transition to game when playerName is set
+  useEffect(() => {
+    if (gameState.playerName && !gameState.isGameOver && !gameState.isVictory) {
+      setUiStage('game');
     }
+  }, [gameState.playerName, gameState.isGameOver, gameState.isVictory]);
 
+  // Handle ending
+  useEffect(() => {
     if (gameState.isGameOver || gameState.isVictory) {
-        const message = gameState.isVictory ? "Congratulations! You saved San Gubat!" : "Game Over!";
-        return (
-            <div className="game-end-screen">
-                <h1>{message}</h1>
-                {gameState.currentSceneId && <p>{gameState.storyData[gameState.currentSceneId].text}</p>}
-                <button onClick={resetGame}>Play Again</button>
-            </div>
-        );
+      setUiStage('end');
     }
+  }, [gameState.isGameOver, gameState.isVictory]);
 
-    return <GameScreen />;
+  const handleReplay = () => {
+    resetGame();
+    setUiStage('landing');
+  };
+
+  if (uiStage === 'landing') return <LandingScreen onContinue={goName} />;
+  if (uiStage === 'name') return <StartScreen />;
+  if (uiStage === 'game') return <GameScreen />;
+  if (uiStage === 'end') {
+    const isVictory = gameState.isVictory;
+    return (
+      <div className={`${isVictory ? 'victory-screen' : 'game-over-screen'} game-end-shared fade-in`}>
+        <h1>{isVictory ? 'VICTORY' : 'GAME OVER'}</h1>
+        {endingScene && <p>{endingScene.text}</p>}
+        <div className="end-actions">
+          <button onClick={handleReplay}>Play Again</button>
+        </div>
+      </div>
+    );
+  }
+  return null;
 }
 
 function App() {
-    return (
-        <GameProvider>
-            <div className="App">
-                <AppContent />
-            </div>
-        </GameProvider>
-    );
+  return (
+    <GameProvider>
+      <div className="App">
+        <AppContent />
+      </div>
+    </GameProvider>
+  );
 }
 
 export default App;

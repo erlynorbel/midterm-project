@@ -1,68 +1,96 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --bg-dark: #050507;
+  --bg-panel: #0d0f12;
+  --bg-panel-alt: #13161b;
+  --accent: #b30000;
+  --accent-glow: #ff2d2d;
+  --text-primary: #e6e6e6;
+  --text-dim: #888;
+  --danger: #ff2323;
+  --success: #3fa35f;
+  --focus-outline: #ff3b3b;
+  color-scheme: dark;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+* {
+  box-sizing: border-box;
 }
 
-body {
+html, body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
+  padding: 0;
+  background: radial-gradient(circle at 30% 20%, #111 0%, #060607 55%, #020203 100%);
+  font-family: 'Cinzel', 'Trajan Pro', Georgia, serif;
+  letter-spacing: 0.5px;
   min-height: 100vh;
+  color: var(--text-primary);
+  overflow-x: hidden;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, rgba(255,0,0,0.02) 0 2px, rgba(0,0,0,0.02) 2px 4px),
+    radial-gradient(circle at 15% 85%, rgba(120,0,0,0.12), transparent 60%),
+    radial-gradient(circle at 80% 20%, rgba(180,0,0,0.15), transparent 65%);
+  mix-blend-mode: overlay;
+  animation: pulseAura 9s ease-in-out infinite;
+  z-index: 0;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+body::after {
+  background:
+    url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAADUlEQVQIW2P4+vXrPwAHXgN4SCUTAQAAAABJRU5ErkJggg==") repeat;
+  opacity: .18;
+  animation: noise 0.6s steps(3) infinite;
+  mix-blend-mode: soft-light;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+@keyframes noise {
+  0% { transform: translate(0,0); }
+  25% { transform: translate(-3%,2%); }
+  50% { transform: translate(2%,-2%); }
+  75% { transform: translate(-1%,1%); }
+  100% { transform: translate(0,0); }
+}
+
+@keyframes pulseAura {
+  0%,100% { opacity: 0.55; }
+  50% { opacity: 0.85; }
+}
+
+h1, h2, h3 {
+  font-weight: 400;
+  text-transform: uppercase;
+  margin: 0 0 1rem;
+  font-family: 'Cinzel', serif;
+  letter-spacing: 2px;
+}
+
+a { color: var(--accent); }
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0b0d;
+}
+::-webkit-scrollbar-thumb {
+  background: #251010;
+  border-radius: 30px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3d1515;
+}
+
+.fade-in {
+  animation: fadeIn 0.9s ease forwards;
+  opacity: 0;
+}
+@keyframes fadeIn {
+  to { opacity: 1; }
 }
