@@ -579,10 +579,295 @@ body {
   .lore-line { text-align: center; }
 }
 
+/* Save/Load functionality styles */
+.loading-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  text-align: center;
+}
+
+.loading-screen h2 {
+  font-size: 1.8rem;
+  color: #f0f0f0;
+  font-weight: 300;
+  letter-spacing: 2px;
+}
+
+.game-controls {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.save-load-button {
+  background: rgba(30, 30, 30, 0.9);
+  border: 1px solid #444;
+  color: #f0f0f0;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+}
+
+.save-load-button:hover {
+  background: rgba(40, 40, 40, 0.95);
+  border-color: #666;
+  transform: translateY(-1px);
+}
+
+.save-load-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  backdrop-filter: blur(4px);
+}
+
+.save-load-menu {
+  background: linear-gradient(145deg, rgba(20, 20, 20, 0.95), rgba(15, 15, 15, 0.98));
+  border: 1px solid #333;
+  border-radius: 12px;
+  width: min(600px, 90vw);
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+}
+
+.save-load-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem 1rem;
+  border-bottom: 1px solid #333;
+}
+
+.save-load-header h2 {
+  margin: 0;
+  color: #f0f0f0;
+  font-size: 1.4rem;
+  font-weight: 500;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 1.8rem;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.close-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.save-load-tabs {
+  display: flex;
+  border-bottom: 1px solid #333;
+}
+
+.save-load-tabs button {
+  flex: 1;
+  padding: 1rem 2rem;
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-bottom: 2px solid transparent;
+}
+
+.save-load-tabs button:hover {
+  color: #f0f0f0;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.save-load-tabs button.active {
+  color: #f0f0f0;
+  border-bottom-color: #9c2020;
+  background: rgba(156, 32, 32, 0.1);
+}
+
+.save-load-content {
+  padding: 2rem;
+}
+
+.save-load-message {
+  background: rgba(156, 32, 32, 0.2);
+  border: 1px solid #9c2020;
+  color: #f0f0f0;
+  padding: 0.8rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.save-section h3,
+.load-section h3 {
+  margin: 0 0 1rem 0;
+  color: #f0f0f0;
+  font-size: 1.2rem;
+}
+
+.save-slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.save-slots button {
+  background: rgba(30, 30, 30, 0.8);
+  border: 1px solid #444;
+  color: #f0f0f0;
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.save-slots button:hover {
+  background: rgba(40, 40, 40, 0.9);
+  border-color: #666;
+  transform: translateY(-1px);
+}
+
+.saved-games {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.save-slot {
+  background: rgba(25, 25, 25, 0.8);
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.save-info h4 {
+  margin: 0 0 0.5rem 0;
+  color: #f0f0f0;
+  font-size: 1.1rem;
+}
+
+.save-info p {
+  margin: 0.2rem 0;
+  color: #ccc;
+  font-size: 0.9rem;
+}
+
+.save-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.load-button,
+.delete-button {
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+}
+
+.load-button {
+  background: #9c2020;
+  color: white;
+}
+
+.load-button:hover {
+  background: #b82828;
+  transform: translateY(-1px);
+}
+
+.delete-button {
+  background: rgba(80, 80, 80, 0.8);
+  color: #f0f0f0;
+}
+
+.delete-button:hover {
+  background: rgba(120, 40, 40, 0.8);
+  transform: translateY(-1px);
+}
+
+.landing-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.continue-button {
+  background: rgba(156, 32, 32, 0.2) !important;
+  border-color: #9c2020 !important;
+}
+
+.continue-button:hover {
+  background: rgba(156, 32, 32, 0.3) !important;
+}
+
 @media (max-width: 640px) {
   .landing-screen {
     padding-top: 2.4rem;
   }
   .landing-screen .game-title { letter-spacing: 4px; }
   .press-start { letter-spacing: 3px; }
+  
+  .save-load-menu {
+    width: 95vw;
+    max-height: 90vh;
+  }
+  
+  .save-load-header {
+    padding: 1rem 1.5rem 0.5rem;
+  }
+  
+  .save-load-content {
+    padding: 1.5rem;
+  }
+  
+  .save-slots {
+    grid-template-columns: 1fr;
+  }
+  
+  .save-slot {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .save-actions {
+    align-self: stretch;
+    justify-content: center;
+  }
+  
+  .game-controls {
+    top: 10px;
+    right: 10px;
+  }
 }

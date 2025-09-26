@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useCallback } from 'react';
 import storyData from './story.json'; // Import your story data
+import { saveGameState, loadGameState, hasSavedGame } from '../utils/localStorage';
 
 const GameContext = createContext();
 
@@ -14,6 +15,45 @@ const initialGameState = {
 
 export const GameProvider = ({ children }) => {
     const [gameState, setGameState] = useState(initialGameState);
+    const [isLoading, setIsLoading] = useState(true);
+
+    // Load saved game state on initialization
+    useEffect(() => {
+        const loadSavedGame = () => {
+            try {
+                const savedState = loadGameState();
+                if (savedState) {
+                    // Validate that the saved state has required properties
+                    const validatedState = {
+                        ...initialGameState,
+                        ...savedState,
+                        // Ensure inventory is an array
+                        inventory: Array.isArray(savedState.inventory) ? savedState.inventory : [],
+                        // Ensure HP is within valid range
+                        hp: Math.max(0, Math.min(100, savedState.hp || 100))
+                    };
+                    setGameState(validatedState);
+                } else {
+                    setGameState(initialGameState);
+                }
+            } catch (error) {
+                console.error('Error loading saved game:', error);
+                setGameState(initialGameState);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadSavedGame();
+    }, []);
+
+    // Auto-save game state whenever it changes (except for initial load)
+    useEffect(() => {
+        if (!isLoading && gameState.playerName) {
+            // Only save if the player has started a game (has a name)
+            saveGameState(gameState);
+        }
+    }, [gameState, isLoading]);
 
     // Effect to check for HP game over condition
     useEffect(() => {
@@ -72,8 +112,50 @@ export const GameProvider = ({ children }) => {
         });
     }, []);
 
+    const loadSavedGame = useCallback((slot = 'auto') => {
+        try {
+            const savedState = loadGameState(slot);
+            if (savedState) {
+                const validatedState = {
+                    ...initialGameState,
+                    ...savedState,
+                    inventory: Array.isArray(savedState.inventory) ? savedState.inventory : [],
+                    hp: Math.max(0, Math.min(100, savedState.hp || 100))
+                };
+                setGameState(validatedState);
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error('Error loading saved game:', error);
+            return false;
+        }
+    }, []);
+
+    const saveCurrentGame = useCallback((slot = 'auto') => {
+        if (!gameState.playerName) {
+            console.warn('Cannot save game: no player name set');
+            return false;
+        }
+        return saveGameState(gameState, slot);
+    }, [gameState]);
+
+    const hasActiveSave = useCallback((slot = 'auto') => {
+        return hasSavedGame(slot);
+    }, []);
+
     return (
-        <GameContext.Provider value={{ gameState, startGame, resetGame, makeChoice, storyData }}>
+        <GameContext.Provider value={{ 
+            gameState, 
+            isLoading,
+            startGame, 
+            resetGame, 
+            makeChoice, 
+            storyData,
+            loadSavedGame,
+            saveCurrentGame,
+            hasActiveSave
+        }}>
             {children}
         </GameContext.Provider>
     );
